@@ -16,17 +16,16 @@ export PATH="${COLABFOLDDIR}/conda/condabin:${PATH}"
 conda create -p $COLABFOLDDIR/colabfold-conda python=3.7 -y
 conda activate $COLABFOLDDIR/colabfold-conda
 conda update -n base conda -y
-conda install -c conda-forge python=3.7 cudnn==8.2.1.32 cudatoolkit==11.1.1 openmm==7.5.1 pdbfixer -y
+conda install -c conda-forge python=3.7 cudatoolkit==11.1.1 openmm==7.5.1 pdbfixer -y
 # Download the updater
 wget -qnc https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/update_linux.sh --no-check-certificate
 chmod +x update_linux.sh
 # install alignment tools
 conda install -c conda-forge -c bioconda kalign3=3.2.2 hhsuite=3.3.0 -y
 # install ColabFold and Jaxlib
-colabfold-conda/bin/python3.7 -m pip install "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold"
-colabfold-conda/bin/python3.7 -m pip install https://storage.googleapis.com/jax-releases/cuda11/jaxlib-0.3.25+cuda11.cudnn82-cp37-cp37m-manylinux2014_x86_64.whl
-colabfold-conda/bin/python3.7 -m pip install jax==0.3.25 biopython==1.79
-
+colabfold-conda/bin/python3.7 -m pip install "colabfold[alphafold] @ git+https://github.com/folding2022/ColabFold"
+colabfold-conda/bin/python3.7 -m pip install https://storage.googleapis.com/jax-releases/nocuda/jaxlib-0.3.25-cp37-cp37m-manylinux2014_x86_64.whl
+colabfold-conda/bin/python3.7 -m pip install jax[cpu]==0.3.25 biopython==1.79
 # fix jax.tree_(un)flatten warnings (ad hoc)
 sed -i -e "s/jax.tree_flatten/jax.tree_util.tree_flatten/g" colabfold-conda/lib/python3.7/site-packages/alphafold/model/mapping.py
 sed -i -e "s/jax.tree_unflatten/jax.tree_util.tree_unflatten/g" colabfold-conda/lib/python3.7/site-packages/alphafold/model/mapping.py
