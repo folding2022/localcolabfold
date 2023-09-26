@@ -4,7 +4,9 @@
 
 ## What is LocalColabFold?
 
-LocalColabFold is an installer script designed to make ColabFold functionality available on local users' machines. It supports wide range of operating systems, such as Windows 10 or later (using Windows Subsystem for Linux 2), macOS, and Linux.
+LocalColabFold is an installer script designed to make ColabFold functionality available on users' local machines. It supports wide range of operating systems, such as Windows 10 or later (using Windows Subsystem for Linux 2), macOS, and Linux.
+
+**If you only want to predict a small number of naturally occuring proteins, I recommend using [ColabFold notebook](https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/AlphaFold2.ipynb) or download the structures from [AlphaFold Protein Structure Database](https://alphafold.ebi.ac.uk/) or [UniProt](https://www.uniprot.org/). Localcolabfold is suitable for more advanced applications such as batch processing of structure predictions for non-natural proteins and complexes, or predictions with manually specified MSAs / templates.**
 
 ## Advantages of LocalColabFold
 
@@ -13,36 +15,17 @@ LocalColabFold is an installer script designed to make ColabFold functionality a
 - **No GPU limitations**
 - **NOT necessary to prepare the large database required for native AlphaFold2**.
 
-## Note (Nov 24, 2022)
+## Note (Feb 5, 2023)
 
-ColabFold now depends on [JAX](https://github.com/google/jax) == 0.3.25 and jaxlib == 0.3.25, so you may encounter this error message after updating your localcolabfold using `./update_linux.sh`:
-
-```
-jax._src.errors.UnexpectedTracerError: An UnexpectedTracerError was raised while inside a Haiku transformed function (see error above).
-Hint: are you using a JAX transform or JAX control-flow function (jax.vmap/jax.scan/...) inside a Haiku transform? You might want to use the Haiku version of the transform instead (hk.vmap/hk.scan/...).
-See https://dm-haiku.readthedocs.io/en/latest/notebooks/transforms.html on why you can't use JAX transforms inside a Haiku module.
-See https://jax.readthedocs.io/en/latest/errors.html#jax.errors.UnexpectedTracerError
-```
-
-To fix this issue, please upgrade your jax and jaxlib:
-
-```bash
-# '/path/to/your/colabfold_batch' should be substituted to your path, e.g. '/home/moriwaki/Desktop/colabfold_batch'
-# install GPU-supported jaxlib
-COLABFOLDDIR="/path/to/your/colabfold_batch"
-${COLABFOLDDIR}/colabfold-conda/bin/python3.7 -m pip uninstall "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold" -y
-${COLABFOLDDIR}/colabfold-conda/bin/python3.7 -m pip uninstall alphafold-colabfold -y
-${COLABFOLDDIR}/colabfold-conda/bin/python3.7 -m pip install "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold"
-${COLABFOLDDIR}/colabfold-conda/bin/python3.7 -m pip install https://storage.googleapis.com/jax-releases/cuda11/jaxlib-0.3.25+cuda11.cudnn82-cp37-cp37m-manylinux2014_x86_64.whl
-${COLABFOLDDIR}/colabfold-conda/bin/python3.7 -m pip install jax==0.3.25 biopython==1.79
-# fix jax.tree_(un)flatten warnings (ad hoc)
-sed -i -e "s/jax.tree_flatten/jax.tree_util.tree_flatten/g" ${COLABFOLDDIR}/colabfold-conda/lib/python3.7/site-packages/alphafold/model/mapping.py
-sed -i -e "s/jax.tree_unflatten/jax.tree_util.tree_unflatten/g" ${COLABFOLDDIR}/colabfold-conda/lib/python3.7/site-packages/alphafold/model/mapping.py
-```
-
+ColabFold now upgrade to 1.5.0 (compatible with AlphaFold 2.3.1). I recommend to install Localcolabfold freshly.
+See also Change log: https://github.com/sokrypton/ColabFold/wiki/v1.5.0
 
 ## New Updates
 
+- 30APr2023, Updated to use python 3.10 for compatibility with Google Colaboratory.
+- 09Mar2023, version 1.5.1 released. The base directory has been changed to `localcolabfold` from `colabfold_batch` to distinguish it from the execution command.
+- 09Mar2023, version 1.5.0 released. See [Release v1.5.0](https://github.com/YoshitakaMo/localcolabfold/releases/tag/v1.5.0)
+- 05Feb2023, version 1.5.0-pre released.
 - 16Jun2022, version 1.4.0 released. See [Release v1.4.0](https://github.com/YoshitakaMo/localcolabfold/releases/tag/v1.4.0)
 - 07May2022, **Updated `update_linux.sh`.** See also [How to update](#how-to-update). Please use a new option `--use-gpu-relax` if GPU relaxation is required (recommended).
 - 12Apr2022, version 1.3.0 released. See [Release v1.3.0](https://github.com/YoshitakaMo/localcolabfold/releases/tag/v1.3.0)
@@ -61,26 +44,28 @@ Built on Mon_Oct_12_20:09:46_PDT_2020
 Cuda compilation tools, release 11.1, V11.1.105
 Build cuda_11.1.TC455_06.29190527_0
 </pre>DO NOT use `nvidia-smi` to check the version.<br>See [NVIDIA CUDA Installation Guide for Linux](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) if you haven't installed it.
-1. Make sure your GNU compiler version is **4.9 or later** because `GLIBCXX_3.4.20` is required:<pre>$ gcc --version
+3. Make sure your GNU compiler version is **4.9 or later** because `GLIBCXX_3.4.20` is required:<pre>$ gcc --version
 gcc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
 Copyright (C) 2019 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 </pre>If the version is 4.8.5 or older (e.g. CentOS 7), install a new one and add `PATH` to it.
-1. Download `install_colabbatch_linux.sh` from this repository:<pre>$ wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabbatch_linux.sh</pre> and run it in the directory where you want to install:<pre>$ bash install_colabbatch_linux.sh</pre>About 5 minutes later, `colabfold_batch` directory will be created. Do not move this directory after the installation.
+4. Download `install_colabbatch_linux.sh` from this repository:<pre>$ wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabbatch_linux.sh</pre> and run it in the directory where you want to install:<pre>$ bash install_colabbatch_linux.sh</pre>About 5 minutes later, `colabfold_batch` directory will be created. Do not move this directory after the installation.
 
     Keep the network unblocked. And **check the log** output to see if there are any errors.
 
     If you find errors in the output log, the easiest way is to check the network and delete the colabfold_batch directory, then re-run the installation script.
 
-2. Add environment variable PATH:<pre># For bash or zsh<br># e.g. export PATH="/home/moriwaki/Desktop/colabfold_batch/bin:\$PATH"<br>export PATH="<COLABFOLDBATCH_DIR>/bin:\$PATH"</pre>
-It is recommended to add this export command to \~/.bashrc and restart bash (\~/.bashrc will be executed every time bash is started)
+5. Add environment variable PATH:<pre># For bash or zsh<br># e.g. export PATH="/home/moriwaki/Desktop/localcolabfold/colabfold-conda/bin:\$PATH"<br>export PATH="/path/to/your/localcolabfold/colabfold-conda/bin:\$PATH"</pre>
+It is recommended to add this export command to `~/.bashrc` and restart bash (`~/.bashrc` will be executed every time bash is started)
 
-3. To run the prediction, type <pre>colabfold_batch --amber --templates --num-recycle 3 --use-gpu-relax inputfile outputdir/ </pre>The result files will be created in the `outputdir`.
-Just use cpu to run the prediction, type <pre>colabfold_batch --amber --templates --num-recycle 3 --use-gpu-relax inputfile outputdir/ --cpu</pre>
-To run the AlphaFold2-multimer, type <pre>colabfold_batch --amber --templates --num-recycle 3 --use-gpu-relax --model-type AlphaFold2-multimer inputfile outputdir/</pre>
+6. To run the prediction, type <pre>colabfold_batch input outputdir/</pre>The result files will be created in the `outputdir`. This command will execute the prediction without templates and relaxation (energy minimization). If you want to use templates and relaxation, add `--templates` and `--amber` flags, respectively. For example,
 
-For more details, see `colabfold_batch --help`.
+    <pre>colabfold_batch --templates --amber input outputdir/</pre>
+
+    To run the AlphaFold2-multimer with the versioned AF2-multimer weights, add `--model-type alphafold2_multimer_v3` in the arguments. e.g. <pre>colabfold_batch --templates --amber --model-type alphafold2_multimer_v3 input outputdir/</pre>`alphafold2_multimer_v1, alphafold2_multimer_v2` are also available. Default is `auto` (use `alphafold2_ptm` for monomers and `alphafold2_multimer_v3` for complexes.)
+
+For more details, see [Flags](#flags) and `colabfold_batch --help`.
 
 #### For WSL2 (in windows)
 
@@ -194,6 +179,22 @@ id,sequence
 
 You can input your a3m format MSA file. For multimer predictions, the a3m file should be compatible with colabfold format.
 
+### Flags
+
+These flags are useful for the predictions.
+
+- **`--amber`** : Use amber for structure refinement (relaxation / energy minimization). To control number of top ranked structures are relaxed set `--num-relax`.
+- **`--templates`** : Use templates from pdb.
+- **`--use-gpu-relax`** : Run amber on NVidia GPU instead of CPU. This feature is only available on a machine with Nvidia GPUs.
+- **`--num-recycle <int>`** : Number of prediction recycles. Increasing recycles can improve the quality but slows down the prediction. Default is `3`. (e.g. `--num-recycle 10`)
+- `--custom-template-path <directory>` : Restrict template files used for `--template` to only those contained in the specified directory. This flag enables us to use non-public pdb files for the prediction. See also https://github.com/sokrypton/ColabFold/issues/177 .
+- `--random-seed <int>` **Changing the seed for the random number generator can result in different structure predictions.** (e.g. `--random-seed 42`)
+- `--num-seeds <int>` Number of seeds to try. Will iterate from range(random_seed, random_seed+num_seeds). (e.g. `--num-seed 5`)
+- `--max-msa` : Defines: `max-seq:max-extra-seq` number of sequences to use (e.g. `--max-msa 512:1024`). `--max-seq` and `--max-extra-seq` arguments are also available if you want to specify separately. This is a reimplementation of the paper of [Sampling alternative conformational states of transporters and receptors with AlphaFold2](https://elifesciences.org/articles/75751) demonstrated by del Alamo *et al*.
+- `--use-dropout` : activate dropouts during inference to sample from uncertainity of the models.
+- `--overwrite-existing-results` : Overwrite the result files.
+- For more information, `colabfold_batch --help`.
+
 ## How to update
 
 Since [ColabFold](https://github.com/sokrypton/ColabFold) is still a work in progress, your localcolabfold should be also updated frequently to use the latest features. An easy-to-use update script is provided for this purpose.
@@ -248,4 +249,4 @@ $ ./update_${OS}.sh .
   *Nature* (2021) doi: [10.1038/s41586-021-03819-2](https://doi.org/10.1038/s41586-021-03819-2)
 - If you’re using **AlphaFold-multimer**, please also cite: <br />
   Evans et al. "Protein complex prediction with AlphaFold-Multimer." <br />
-  *BioRxiv* (2021) doi: [10.1101/2021.10.04.463034v1](https://www.biorxiv.org/content/10.1101/2021.10.04.463034v1)
+  *BioRxiv* (2022) doi: [10.1101/2021.10.04.463034v2](https://www.biorxiv.org/content/10.1101/2021.10.04.463034v2)

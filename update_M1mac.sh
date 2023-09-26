@@ -40,16 +40,9 @@ COLABFOLDDIR=$(cd $(dirname colabfold_batch); pwd)
 . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh"
 conda activate $COLABFOLDDIR/colabfold-conda
 # reinstall colabfold
-python3.8 -m pip uninstall "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold" -y --no-color
-python3.8 -m pip uninstall alphafold-colabfold -y --no-color
-python3.8 -m pip install alphafold-colabfold --no-deps --no-color
-python3.8 -m pip install "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold" --no-deps --no-color
-# fix warnings (ad hoc)
-gsed -i -e "s/jax.tree_flatten/jax.tree_util.tree_flatten/g" ${COLABFOLDDIR}/colabfold-conda/lib/python3.8/site-packages/alphafold/model/mapping.py
-gsed -i -e "s/jax.tree_unflatten/jax.tree_util.tree_unflatten/g" ${COLABFOLDDIR}/colabfold-conda/lib/python3.8/site-packages/alphafold/model/mapping.py
-# repatch batch.py
-# pushd ${COLABFOLDDIR}/colabfold-conda/lib/python3.8/site-packages/colabfold
-# gsed -i -e "s#props_path = \"stereo_chemical_props.txt\"#props_path = \"${COLABFOLDDIR}/stereo_chemical_props.txt\"#" batch.py
-# popd
+python3.10 -m pip uninstall "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold" -y --no-color
+python3.10 -m pip uninstall alphafold-colabfold -y --no-color
+python3.10 -m pip install alphafold-colabfold --no-deps --no-color
+python3.10 -m pip install "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold" --no-deps --no-color
 popd
 
